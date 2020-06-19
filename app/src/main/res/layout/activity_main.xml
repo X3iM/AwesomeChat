@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +9,42 @@
     <ListView
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
+        tools:listitem="@layout/message_item"
         android:layout_width="match_parent"
+        android:layout_above="@+id/linearLayout"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/sendPhotoButton"
+            android:background="@drawable/insert_photo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/sendMessageButton"
+            android:text="send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

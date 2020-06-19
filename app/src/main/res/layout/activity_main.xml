@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <ListView
+        android:id="@+id/listView"
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
         tools:listitem="@layout/message_item"
@@ -36,12 +37,14 @@
         <Button
             android:id="@+id/sendMessageButton"
             android:text="send"
+            android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
     <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

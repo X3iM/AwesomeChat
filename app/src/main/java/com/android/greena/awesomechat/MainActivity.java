@@ -3,20 +3,90 @@ package com.android.greena.awesomechat;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+
+    private MessageAdapter  adapter;
+
+    private ListView        listView;
+    private ProgressBar     progressBar;
+    private ImageButton     sendPhotoButton;
+    private EditText        messageEditText;
+    private Button          sendMessageButton;
+
+    private String          userName;
+
+    private FirebaseDatabase    database;
+    private DatabaseReference   databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference().child("messages");
+        databaseReference.setValue("Hello!");
 
-        myRef.setValue("Hello, World!");
+        adapter = new MessageAdapter(this, R.layout.message_item, new ArrayList<Message>());
+        listView = findViewById(R.id.listView);
+        sendPhotoButton = findViewById(R.id.sendPhotoButton);
+        messageEditText = findViewById(R.id.messageEditText);
+        sendMessageButton = findViewById(R.id.sendMessageButton);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        userName = "Default User";
+
+        messageEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().length() > 0) sendMessageButton.setEnabled(true);
+                else sendMessageButton.setEnabled(false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        messageEditText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(500)});
+
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Message message = new Message(messageEditText.getText().toString(), userName, null);
+
+                databaseReference.push().setValue(message);
+                messageEditText.setText("");
+            }
+        });
+
+        sendPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 }

@@ -11,6 +11,7 @@
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
         tools:listitem="@layout/message_item"
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_above="@+id/linearLayout"
         android:layout_height="match_parent"/>

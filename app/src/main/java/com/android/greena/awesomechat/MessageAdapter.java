@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -23,7 +24,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         if (convertView == null)
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.message_item, parent, false);
 
-        ImageButton photoImageButton = convertView.findViewById(R.id.photoImageView);
+        ImageView photoImageButton = convertView.findViewById(R.id.photoImageView);
         TextView textTextView = convertView.findViewById(R.id.textTextView);
         TextView nameTextView = convertView.findViewById(R.id.nameTextView);
 

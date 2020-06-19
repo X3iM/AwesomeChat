@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "16922245777",
+    "firebase_url": "https://awesome-chat-358f7.firebaseio.com",
+    "project_id": "awesome-chat-358f7",
+    "storage_bucket": "awesome-chat-358f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16922245777:android:43a4a2399350499f1a5d30",
+        "android_client_info": {
+          "package_name": "com.android.greena.awesomechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16922245777-s0ugcsfaorcf173oreua8f7djgnogsuc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU0jj0qFe0YLMBu7BBeF9OwzaS-8YSlGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16922245777-s0ugcsfaorcf173oreua8f7djgnogsuc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -54,9 +54,12 @@
         android:layout_marginEnd="35dp"
         android:drawableLeft="@drawable/person"
         android:drawableTint="#CDCCCC"
+        android:background="@drawable/edittext_background"
+        android:padding="12dp"
         android:hint="Username"
         android:inputType="textPersonName"
         android:textColorHint="#CDCCCC"
+        android:textColor="#CDCCCC"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,41 +69,92 @@
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
-        android:layout_marginTop="10dp"
-        android:hint="Your email"
+        android:hint="E-mail"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:drawableLeft="@drawable/email"
+        android:drawableTint="#CDCCCC"
         android:inputType="textEmailAddress"
         android:textColorHint="#CDCCCC"
+        android:textColor="#CDCCCC"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nameEditText" />
 
-    <!--    <EditText-->
-<!--        android:id="@+id/passEditText"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:hint="Your password"-->
-<!--        android:inputType="textPassword"/>-->
+    <EditText
+        android:id="@+id/passEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginEnd="35dp"
+        android:background="@drawable/edittext_background"
+        android:drawableLeft="@drawable/lock"
+        android:drawableTint="#CDCCCC"
+        android:textColor="#CDCCCC"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:textColorHint="#CDCCCC"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailEditText" />
 
-<!--    <Button-->
-<!--        android:id="@+id/signUpButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:text="Sign Up"/>-->
+    <EditText
+        android:id="@+id/checkPassEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginEnd="35dp"
+        android:background="@drawable/edittext_background"
+        android:drawableLeft="@drawable/lock"
+        android:drawableTint="#CDCCCC"
+        android:textColor="#CDCCCC"
+        android:hint="Password Check"
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:textColorHint="#CDCCCC"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passEditText" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/toggleLoginSingUpTextView"-->
-<!--        android:text="Tap to log in"-->
-<!--        android:textSize="16sp"-->
-<!--        android:clickable="true"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:onClick="toggleLoginMode"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:focusable="true" />-->
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="45dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button_style"
+        android:text="SIGNUP"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkPassEditText" />
+
+    <TextView
+        android:id="@+id/toggleLoginSingUpTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="toggleLoginMode"
+        android:text="Already have an account Login Here"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="@+id/signUpButton"
+        app:layout_constraintStart_toStartOf="@+id/signUpButton"
+        app:layout_constraintTop_toBottomOf="@+id/signUpButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

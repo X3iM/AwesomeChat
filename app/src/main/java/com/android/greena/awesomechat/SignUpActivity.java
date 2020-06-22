@@ -18,10 +18,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
-
-    private static final String TAG = "SignInActivity";
 
     private FirebaseAuth    auth;
 
@@ -32,12 +32,18 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView        toggleLoginSingUpTextView;
     private Button          signUpButton;
 
+    private FirebaseDatabase database;
+    private DatabaseReference usersDBReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        usersDBReference = database.getReference().child("users");
+
         emailEditText = findViewById(R.id.emailEditText);
         passEditText = findViewById(R.id.passEditText);
         checkPassEditText = findViewById(R.id.checkPassEditText);
@@ -54,15 +60,20 @@ public class SignUpActivity extends AppCompatActivity {
                 String checkPassword = checkPassEditText.getText().toString();
 
                 if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(userName)) {
-                    if (password.equals(checkPassword))
-                        loginSignUpUser(email, passEditText.getText().toString().trim());
+                    if (password.trim().length() < 7)
+                        Toast.makeText(SignUpActivity.this, "Password mast by at least 7 characters", Toast.LENGTH_LONG).show();
+                    else if (password.equals(checkPassword))
+                        loginSignUpUser(email, password.trim());
                     else
-                        Toast.makeText(SignUpActivity.this, "Password is not match", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "Password don't match", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(SignUpActivity.this, "Please add your username and E-mail", Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+        if (auth.getCurrentUser() != null)
+            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
     }
 
     private void loginSignUpUser(String email, String password) {
@@ -73,11 +84,12 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(SignUpActivity.this, "Authentication success.", Toast.LENGTH_LONG).show();
                             FirebaseUser user = auth.getCurrentUser();
-                            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                            //updateUI(user);
+                            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                            intent.putExtra("userName", nameEditText.getText().toString().trim());
+                            createUser(user);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_LONG).show();
-                            //updateUI(null);
                         }
 
                         // ...
@@ -85,9 +97,9 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private void createUser(FirebaseUser fbUser) {
+        User user = new User(fbUser.getUid(), nameEditText.getText().toString().trim(), fbUser.getEmail());
+        usersDBReference.push().setValue(user);
     }
 
     public void toggleLoginMode(View view) {

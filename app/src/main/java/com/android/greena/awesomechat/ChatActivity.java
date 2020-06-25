@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -19,26 +20,40 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
-    private MessageAdapter  adapter;
+    public static final int     RC_IMAGE_PICKER = 123;
 
-    private ListView        listView;
-    private ProgressBar     progressBar;
-    private ImageButton     sendPhotoButton;
-    private EditText        messageEditText;
-    private Button          sendMessageButton;
+    private MessageAdapter      adapter;
 
-    private String          userName;
+    private ListView            listView;
+    private ProgressBar         progressBar;
+    private ImageButton         sendPhotoButton;
+    private EditText            messageEditText;
+    private Button              sendMessageButton;
+
+    private String              userName;
+    private String              recipientUserId;
+
+    private FirebaseAuth        auth;
+
+    private FirebaseStorage     storage;
+    private StorageReference    storageReference;
 
     private FirebaseDatabase    database;
     private DatabaseReference   databaseReference;
@@ -50,12 +65,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            userName = intent.getStringExtra("userName");
+            recipientUserId = intent.getStringExtra("recipientUserId");
+        }
+        else
+            userName = "Default User";
 
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference().child("messages");
 
         usersDatabaseReference = database.getReference().child("users");
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference().child("chat_images");
+
+        auth = FirebaseAuth.getInstance();
 
         adapter = new MessageAdapter(this, R.layout.message_item, new ArrayList<Message>());
         listView = findViewById(R.id.listView);
@@ -65,12 +93,6 @@ public class MainActivity extends AppCompatActivity {
         sendMessageButton = findViewById(R.id.sendMessageButton);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
-
-        Intent intent = getIntent();
-        if (intent != null)
-            userName = intent.getStringExtra("userName");
-        else
-            userName = "Default User";
 
         messageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -95,7 +117,11 @@ public class MainActivity extends AppCompatActivity {
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Message message = new Message(messageEditText.getText().toString(), userName, null);
+                Message message = new Message();
+                message.setName(userName);
+                message.setText(messageEditText.getText().toString());
+                message.setSender(auth.getCurrentUser().getUid());
+                message.setRecipient(recipientUserId);
 
                 databaseReference.push().setValue(message);
                 messageEditText.setText("");
@@ -105,7 +131,10 @@ public class MainActivity extends AppCompatActivity {
         sendPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(intent, "Choose an image"), RC_IMAGE_PICKER);
             }
         });
 
@@ -136,7 +165,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Message message = snapshot.getValue(Message.class);
-                adapter.add(message);
+
+                if (message .getSender().equals(auth.getCurrentUser().getUid()) && message.getRecipient().equals(recipientUserId)) {
+                    message.setMine(false);
+                    adapter.add(message);
+                } else if (message .getSender().equals(recipientUserId) && message.getRecipient().equals(auth.getCurrentUser().getUid())) {
+                    message.setMine(true);
+                    adapter.add(message);
+                }
             }
 
             @Override
@@ -166,11 +202,47 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.sign_out) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MainActivity.this, LogInActivity.class));
+            startActivity(new Intent(ChatActivity.this, LogInActivity.class));
         } else {
             return super.onOptionsItemSelected(item);
         }
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_IMAGE_PICKER && resultCode == RESULT_OK) {
+            Uri imageUti = data.getData();
+            final StorageReference imageRef = storageReference.child(imageUti.getLastPathSegment());
+
+            UploadTask uploadTask = imageRef.putFile(imageUti);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful())
+                        throw task.getException();
+
+                    return imageRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Message message = new Message();
+
+                        message.setImageUrl(downloadUri.toString());
+                        message.setName(userName);
+                        message.setSender(auth.getCurrentUser().getUid());
+                        message.setRecipient(recipientUserId);
+                        databaseReference.push().setValue(message);
+                    }
+                }
+            });
+        }
+
     }
 }

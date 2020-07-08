@@ -1,4 +1,4 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.greena.awesomechat.R;
+import com.android.greena.awesomechat.model.User;
 
 import java.util.List;
 

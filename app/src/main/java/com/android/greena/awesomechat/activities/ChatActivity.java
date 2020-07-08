@@ -1,4 +1,4 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +20,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.android.greena.awesomechat.model.Message;
+import com.android.greena.awesomechat.adapter.MessageAdapter;
+import com.android.greena.awesomechat.R;
+import com.android.greena.awesomechat.model.User;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public static final int     RC_IMAGE_PICKER = 123;
 
-    private MessageAdapter      adapter;
+    private MessageAdapter adapter;
 
     private ListView            listView;
     private ProgressBar         progressBar;
@@ -49,6 +53,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private String              userName;
     private String              recipientUserId;
+    private String              recipientUserName;
 
     private FirebaseAuth        auth;
 
@@ -71,9 +76,10 @@ public class ChatActivity extends AppCompatActivity {
         if (intent != null) {
             userName = intent.getStringExtra("userName");
             recipientUserId = intent.getStringExtra("recipientUserId");
+            recipientUserName = intent.getStringExtra("recipientUserName");
         }
-        else
-            userName = "Default User";
+
+        setTitle(recipientUserName);
 
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference().child("messages");

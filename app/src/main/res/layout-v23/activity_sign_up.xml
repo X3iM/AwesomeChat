@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimary"
-    tools:context=".SignUpActivity">
+    tools:context=".activities.SignUpActivity">
 
     <Toolbar
         android:id="@+id/toolBar"

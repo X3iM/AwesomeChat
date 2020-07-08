@@ -1,4 +1,4 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,8 +9,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.android.greena.awesomechat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,12 +26,12 @@ public class LogInActivity extends AppCompatActivity {
     private EditText        emailEditText;
     private EditText        passEditText;
     private EditText        nameEditText;
-    private Button          logInButton;
+    private ImageButton     logInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_in);
+        setContentView(R.layout.new_activity_log_in);
 
         auth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.emailEditText);

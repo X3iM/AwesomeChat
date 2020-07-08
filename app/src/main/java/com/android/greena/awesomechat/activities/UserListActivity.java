@@ -1,8 +1,9 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.android.greena.awesomechat.R;
+import com.android.greena.awesomechat.model.User;
+import com.android.greena.awesomechat.adapter.UserAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -22,19 +26,21 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserListActivity extends AppCompatActivity {
 
-    private String              userName;
+    private String                      mUserName;
 
-    private FirebaseAuth        auth;
-    private DatabaseReference   usersDbReference;
-    private ChildEventListener  usersChildEventListener;
+    private FirebaseAuth                mAuth;
+    private DatabaseReference           mUsersDbReference;
+    private ChildEventListener          mUsersChildEventListener;
 
-    private List<User>          users;
-    private RecyclerView        userRecyclerView;
-    private UserAdapter         userAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private Toolbar                     mToolBar;
+    private List<User>                  mUsers;
+    private RecyclerView                mUserRecyclerView;
+    private UserAdapter                 mUserAdapter;
+    private RecyclerView.LayoutManager  mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,25 +49,30 @@ public class UserListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null)
-            userName = intent.getStringExtra(userName);
+            mUserName = intent.getStringExtra(mUserName);
 
-        auth = FirebaseAuth.getInstance();
-        users = new ArrayList<>();
+        mToolBar = findViewById(R.id.main_page_toolbar);
+        setSupportActionBar(mToolBar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("ChatOberts");
+
+        mAuth = FirebaseAuth.getInstance();
+        mUsers = new ArrayList<>();
         buildRecyclerView();
         attachUserDatabaseListener();
     }
 
     private void attachUserDatabaseListener() {
-        usersDbReference = FirebaseDatabase.getInstance().getReference().child("users");
-        if (usersChildEventListener == null) {
-            usersChildEventListener = new ChildEventListener() {
+        mUsersDbReference = FirebaseDatabase.getInstance().getReference().child("users");
+        if (mUsersChildEventListener == null) {
+            mUsersChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     User user = snapshot.getValue(User.class);
-                    if (!user.getId().equals(auth.getCurrentUser().getUid())) {
+                    if (!user.getId().equals(mAuth.getCurrentUser().getUid())) {
                         user.setAvatarMockUpResources(R.drawable.person);
-                        users.add(user);
-                        userAdapter.notifyDataSetChanged();
+                        mUsers.add(user);
+                        System.out.println("add users");
+                        mUserAdapter.notifyDataSetChanged();
                     }
                 }
 
@@ -79,20 +90,20 @@ public class UserListActivity extends AppCompatActivity {
             };
         }
 
-        usersDbReference.addChildEventListener(usersChildEventListener);
+        mUsersDbReference.addChildEventListener(mUsersChildEventListener);
     }
 
     private void buildRecyclerView() {
-        userRecyclerView = findViewById(R.id.userListRecyclerView);
-        userRecyclerView.setHasFixedSize(true);
-        userRecyclerView.addItemDecoration(new DividerItemDecoration(userRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
-        layoutManager = new LinearLayoutManager(this);
-        userAdapter = new UserAdapter(users);
+        mUserRecyclerView = findViewById(R.id.userListRecyclerView);
+        mUserRecyclerView.setHasFixedSize(true);
+        mUserRecyclerView.addItemDecoration(new DividerItemDecoration(mUserRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        mLayoutManager = new LinearLayoutManager(this);
+        mUserAdapter = new UserAdapter(mUsers);
 
-        userRecyclerView.setLayoutManager(layoutManager);
-        userRecyclerView.setAdapter(userAdapter);
+        mUserRecyclerView.setLayoutManager(mLayoutManager);
+        mUserRecyclerView.setAdapter(mUserAdapter);
 
-        userAdapter.setOnUserClickListener(new UserAdapter.OnUserClickListener() {
+        mUserAdapter.setOnUserClickListener(new UserAdapter.OnUserClickListener() {
             @Override
             public void onUserClickListener(int pos) {
                 goToChat(pos);
@@ -102,16 +113,16 @@ public class UserListActivity extends AppCompatActivity {
 
     private void goToChat(int position) {
         Intent intent = new Intent(UserListActivity.this, ChatActivity.class);
-        intent.putExtra("recipientUserId", users.get(position).getId());
-        intent.putExtra("userName", userName);
+        intent.putExtra("recipientUserId", mUsers.get(position).getId());
+        intent.putExtra("recipientName", mUsers.get(position).getName());
+        intent.putExtra("userName", mUserName);
 
         startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 

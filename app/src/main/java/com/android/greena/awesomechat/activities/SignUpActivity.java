@@ -1,4 +1,4 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.greena.awesomechat.R;
+import com.android.greena.awesomechat.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -37,7 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_sign_up);
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -71,8 +73,20 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        if (auth.getCurrentUser() != null)
+//        if (auth.getCurrentUser() != null)
+//            startActivity(new Intent(SignUpActivity.this, UserListActivity.class));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
             startActivity(new Intent(SignUpActivity.this, UserListActivity.class));
+            finish();
+        }
     }
 
     private void loginSignUpUser(String email, String password) {

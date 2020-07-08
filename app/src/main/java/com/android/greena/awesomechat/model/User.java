@@ -1,4 +1,4 @@
-package com.android.greena.awesomechat;
+package com.android.greena.awesomechat.model;
 
 public class User {
 

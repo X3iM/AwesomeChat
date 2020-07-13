@@ -2,13 +2,16 @@ package com.android.greena.awesomechat.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,16 +27,19 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private FirebaseAuth    auth;
+    private FirebaseAuth      auth;
 
-    private EditText        emailEditText;
-    private EditText        passEditText;
-    private EditText        checkPassEditText;
-    private EditText        nameEditText;
-    private TextView        toggleLoginSingUpTextView;
-    private Button          signUpButton;
+    private EditText          emailEditText;
+    private EditText          passEditText;
+    private EditText          checkPassEditText;
+    private EditText          nameEditText;
+    private TextView          toggleLoginSingUpTextView;
+    private Button            signUpButton;
 
-    private FirebaseDatabase database;
+    private Toolbar           toolbar;
+    private ProgressBar       mProgressBar;
+
+    private FirebaseDatabase  database;
     private DatabaseReference usersDBReference;
 
     @Override
@@ -44,6 +50,14 @@ public class SignUpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         usersDBReference = database.getReference().child("users");
+
+        toolbar = findViewById(R.id.sign_up_toolbar);
+        setSupportActionBar(toolbar);
+        System.out.println("--------------------" + toolbar);
+        getSupportActionBar().setTitle("Create account");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mProgressBar = new ProgressBar(this);
 
         emailEditText = findViewById(R.id.emailEditText);
         passEditText = findViewById(R.id.passEditText);
@@ -63,10 +77,13 @@ public class SignUpActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(userName)) {
                     if (password.trim().length() < 7)
                         Toast.makeText(SignUpActivity.this, "Password mast by at least 7 characters", Toast.LENGTH_LONG).show();
-                    else if (password.equals(checkPassword))
+                    else if (password.equals(checkPassword)) {
+                        mProgressBar.setVisibility(View.VISIBLE);
                         loginSignUpUser(email, password.trim());
-                    else
+                    }
+                    else {
                         Toast.makeText(SignUpActivity.this, "Password don't match", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Toast.makeText(SignUpActivity.this, "Please add your username and E-mail", Toast.LENGTH_LONG).show();
                 }
@@ -84,7 +101,9 @@ public class SignUpActivity extends AppCompatActivity {
         FirebaseUser currentUser = auth.getCurrentUser();
 
         if (currentUser != null) {
-            startActivity(new Intent(SignUpActivity.this, UserListActivity.class));
+            Intent intent = new Intent(SignUpActivity.this, UserListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
         }
     }
@@ -99,8 +118,11 @@ public class SignUpActivity extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
                             Intent intent = new Intent(SignUpActivity.this, UserListActivity.class);
                             intent.putExtra("userName", nameEditText.getText().toString().trim());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             createUser(user);
+                            mProgressBar.setVisibility(View.GONE);
                             startActivity(intent);
+                            finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_LONG).show();
                         }

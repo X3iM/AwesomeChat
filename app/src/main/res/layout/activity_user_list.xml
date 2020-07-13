@@ -6,14 +6,37 @@
     tools:context=".activities.UserListActivity"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-    <include layout="@layout/app_bar_layout" android:id="@+id/main_page_toolbar"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/userListRecyclerView"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="55dp"
-        android:padding="4dp"
-        android:scrollbars="vertical"/>
+        android:id="@+id/app_bar_layout">
+
+        <include layout="@layout/app_bar_layout" android:id="@+id/main_page_toolbar"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_list_tab_layout"
+            android:background="@color/colorPrimary">
+        </com.google.android.material.tabs.TabLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tabPager"
+        android:layout_below="@+id/app_bar_layout">
+
+    </androidx.viewpager.widget.ViewPager>
+
+    <!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/userListRecyclerView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginTop="55dp"-->
+<!--        android:padding="4dp"-->
+<!--        android:scrollbars="vertical"/>-->
     
 </RelativeLayout>

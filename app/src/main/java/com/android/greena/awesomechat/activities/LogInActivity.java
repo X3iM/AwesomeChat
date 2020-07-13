@@ -26,12 +26,12 @@ public class LogInActivity extends AppCompatActivity {
     private EditText        emailEditText;
     private EditText        passEditText;
     private EditText        nameEditText;
-    private ImageButton     logInButton;
+    private Button          logInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_activity_log_in);
+        setContentView(R.layout.activity_log_in);
 
         auth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.emailEditText);
@@ -63,7 +63,10 @@ public class LogInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(LogInActivity.this, "Authentication success", Toast.LENGTH_LONG).show();
                             FirebaseUser user = auth.getCurrentUser();
-                            startActivity(new Intent(LogInActivity.this, UserListActivity.class));
+                            Intent intent = new Intent(LogInActivity.this, UserListActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
 //                            updateUI(user);
                         } else {
                             Toast.makeText(LogInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();

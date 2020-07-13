@@ -7,16 +7,21 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.android.greena.awesomechat.R;
+import com.android.greena.awesomechat.adapter.PagerAdapter;
+import com.android.greena.awesomechat.animation.ZoomOutPageTransformer;
+import com.android.greena.awesomechat.fragments.ChatFragment;
 import com.android.greena.awesomechat.model.User;
 import com.android.greena.awesomechat.adapter.UserAdapter;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +41,12 @@ public class UserListActivity extends AppCompatActivity {
     private DatabaseReference           mUsersDbReference;
     private ChildEventListener          mUsersChildEventListener;
 
-    private Toolbar                     mToolBar;
+    private ViewPager                   viewPager;
+
+    private PagerAdapter                pagerAdapter;
+    private TabLayout                   tabLayout;
+
+    private Toolbar                     toolBar;
     private List<User>                  mUsers;
     private RecyclerView                mUserRecyclerView;
     private UserAdapter                 mUserAdapter;
@@ -51,14 +61,23 @@ public class UserListActivity extends AppCompatActivity {
         if (intent != null)
             mUserName = intent.getStringExtra(mUserName);
 
-        mToolBar = findViewById(R.id.main_page_toolbar);
-        setSupportActionBar(mToolBar);
+        toolBar = findViewById(R.id.main_page_toolbar);
+        setSupportActionBar(toolBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("ChatOberts");
+
+        viewPager = findViewById(R.id.tabPager);
+        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        tabLayout = findViewById(R.id.user_list_tab_layout);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
 
         mAuth = FirebaseAuth.getInstance();
         mUsers = new ArrayList<>();
-        buildRecyclerView();
-        attachUserDatabaseListener();
+//        buildRecyclerView();
+//        attachUserDatabaseListener();
     }
 
     private void attachUserDatabaseListener() {
@@ -68,12 +87,12 @@ public class UserListActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     User user = snapshot.getValue(User.class);
-                    if (!user.getId().equals(mAuth.getCurrentUser().getUid())) {
-                        user.setAvatarMockUpResources(R.drawable.person);
-                        mUsers.add(user);
-                        System.out.println("add users");
-                        mUserAdapter.notifyDataSetChanged();
-                    }
+//                    if (!user.getId().equals(mAuth.getCurrentUser().getUid())) {
+//                        user.setAvatarMockUpResources(R.drawable.person);
+//                        mUsers.add(user);
+//                        System.out.println("add users");
+//                        mUserAdapter.notifyDataSetChanged();
+//                    }
                 }
 
                 @Override
@@ -94,7 +113,7 @@ public class UserListActivity extends AppCompatActivity {
     }
 
     private void buildRecyclerView() {
-        mUserRecyclerView = findViewById(R.id.userListRecyclerView);
+//        mUserRecyclerView = findViewById(R.id.userListRecyclerView);
         mUserRecyclerView.setHasFixedSize(true);
         mUserRecyclerView.addItemDecoration(new DividerItemDecoration(mUserRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
         mLayoutManager = new LinearLayoutManager(this);
